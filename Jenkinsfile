@@ -1,4 +1,5 @@
 
+
 pipeline {
     agent any
 
@@ -25,11 +26,26 @@ pipeline {
                 sh 'ls -lh build/libs/'
             }
         }
+
+        stage('Build Docker Image') {
+            steps {
+                echo 'Building Docker image'
+                sh 'docker build -t userservice:$BUILD_NUMBER .'
+            }
+        }
+
+        stage('Verify Docker Image') {
+            steps {
+                echo 'Verifying Docker image'
+                sh 'docker image inspect userservice:$BUILD_NUMBER'
+                sh 'docker images userservice'
+            }
+        }
     }
 
     post {
         success {
-            echo 'Pipeline completed successfully!'
+            echo 'CI pipeline completed successfully!'
         }
 
         failure {
@@ -37,3 +53,4 @@ pipeline {
         }
     }
 }
+
